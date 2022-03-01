@@ -1,0 +1,158 @@
+﻿@page "/counter"
+
+
+
+<EditForm Model="productos" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="card">
+
+
+        <div class="card-header">
+            <h3>Registro</h3>
+        </div>
+
+
+        <div class="card-body">
+            <form>
+
+                @*Producto id*@
+
+                <div class="form-row align-items-center">
+
+                    <div class="col">
+
+                        <div class="form-group">
+
+                            <label>ProductoID</label>
+
+                            <div class="input-group">
+
+                                <InputNumber @bind-Value="productos.ProductoId" class="form-control col-4" />
+
+                                <div>
+
+                                   <button type="button" class="btn btn-primary input-group-text"@onclick="Buscar">Buscar</button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                @* Descricion *@
+                <div class="form-group">
+                    <label>Descricion</label>
+                    <InputText class="form-control" @bind-Value="productos.Descripcion" />
+                    <ValidationMessage For="@(() =>productos.Descripcion)" />
+                </div>
+                @* Exitencia *@
+                <div class="form-group">
+                    <label>Exitencia</label>
+                    <InputNumber class="form-control" @bind-Value="productos.Existencia" />
+                    <ValidationMessage For="@(() =>productos.Existencia)" />
+                </div>
+                @* Costo *@
+                <div class="form-group">
+                    <label>Costo</label>
+                    <InputNumber class="form-control" @bind-Value="productos.Costo" />
+                    <ValidationMessage For="@(() =>productos.Costo)" />
+                </div>
+                <div class="form-group">
+                    <label>Inventario</label>
+                    <InputNumber class="form-control" @bind-Value="productos.ValorInventario" />
+                    <ValidationMessage For="@(() =>productos.ValorInventario)" />
+                </div>
+
+            </form>
+            <div class="card-footer">
+
+                <div class="form-group text-center" display: inline-block>
+
+                    <button type="button" class="btn btn-lg btn-primary" @onclick="Nuevo">Nuevo</button>
+
+                    <button type="submit" class="btn btn-lg btn-success">Guardar</button>
+
+                    <button type="button" class="btn btn-lg btn-danger"@onclick="Eliminar">Eliminar</button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</EditForm>
+
+@code {
+    public Productos productos { get; set; } = new Productos();
+    public void Nuevo()
+    {
+
+        Limpiar();
+    }
+    public void Buscar()
+    {
+        
+        var encontrado = ProductosBLL.Buscar(productos.ProductoId);
+        if (encontrado != null)
+        {
+            this.productos.Descripcion = encontrado.Descripcion;
+            this.productos.Costo = encontrado.Costo;
+            this.productos.Existencia = encontrado.Existencia;
+            this.productos.ValorInventario = encontrado.ValorInventario;
+            
+
+
+        }
+        else
+        {
+
+            //MessageBox.Show("No se pudo encontar el producto", "Falido", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+    public void Guardar()
+    {
+        if(!ProductosBLL.Existe(productos.Descripcion)){
+                bool paso = false;
+
+                 
+                 productos.ValorInventario=productos.Existencia*productos.Costo;
+                 ProductosBLL.insertar(productos);
+
+                
+        }else{
+            Limpiar();
+        }
+       
+        
+    }
+
+    public void Limpiar()
+    {
+        productos.ProductoId = 0;
+        productos.Descripcion = "";
+        productos.Existencia =0 ;
+        productos.ValorInventario = 0;
+         productos.Costo = 0;
+    }
+    public void Eliminar()
+    {
+        if (!ProductosBLL.Eliminar(productos.ProductoId))
+        {
+
+
+
+        }
+        else
+        {
+
+        }
+
+    }
+
+}
